@@ -1,54 +1,25 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-const baseUrl = 'http://localhost:3001/api/notes'
-
+import { useState } from "react";
+import NoteList from "./NoteList";
+import Header from "./Header";
+import NoteForm from "./NoteForm";
+export const baseUrl = 'http://localhost:3001/api/notes'
 
 
 const App = () => {
+  /*
+  El useState es un hook encargado de crear variables de estado, donde el primer argumento es el valor 
+  inicial de la variable y el segundo argumento es una función que actualiza el valor. En este caso, 
+  se crean dos variables de estado: newNote y notes, que se inicializan con valores vacíos.
+  newNote es para generar una nueva y notes es para guardar todas las que existen.
+  */
   const [newNote, setNewNote] = useState("");
   const [notes, setNotes] = useState([]);
 
-  useEffect(() => {
-    console.log("effect");
-    axios.get(baseUrl).then((response) => {
-      setNotes(response.data);
-    });
-  }, []);
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
-  };
-
-  const addNote = (event) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-      date: new Date().toISOString(),  // Formato ISO para compatibilidad con SQL
-    };
-
-    axios
-      .post(baseUrl, noteObject)
-      .then((response) => {
-        console.log(response);
-        setNotes(notes.concat(response.data))
-        setNewNote("");
-      });
-  };
-
   return (
     <div>
-      <h1>Notes</h1>
-      <ul>
-      {notes.map((note) => (
-        <li key={note.id}>{note.content}</li>
-      ))}
-    </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
+      <Header/>
+      <NoteList notes={notes} setNotes={setNotes}/>
+      <NoteForm setNotes={setNotes} newNote={newNote} setNewNote={setNewNote} notes={notes}/>
     </div>
   );
 };
